@@ -17,7 +17,7 @@ export function useTaskManager() {
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const checkAuth = async () => {
+  const loadTasks = async () => {
     try {
       const response = await apiClient.get('/tasks');
 
@@ -30,7 +30,7 @@ export function useTaskManager() {
   };
 
   useEffect(() => {
-    checkAuth();
+    loadTasks();
   }, []);
 
   const handleCreate = async () => {
@@ -42,7 +42,7 @@ export function useTaskManager() {
     try {
       setIsCreating(true);
       await apiClient.post('/tasks', taskForm);
-      await checkAuth();
+      await loadTasks();
       setTaskForm({ title: '', category: '', priority: 'medium' });
       setStatusMessage('Задача создана.');
     } catch (error) {
@@ -83,7 +83,7 @@ export function useTaskManager() {
       await apiClient.post('/auth/register', payload);
       setActiveModal(null);
       setAuthFields({ email: '', password: '', name: '' });
-      await checkAuth();
+      await loadTasks();
       setStatusMessage('Регистрация прошла успешно.');
     } catch (error) {
       setStatusMessage('Не удалось зарегистрироваться.');
@@ -103,7 +103,7 @@ export function useTaskManager() {
       await apiClient.post('/auth/login', payload);
       setActiveModal(null);
       setAuthFields({ email: '', password: '', name: '' });
-      await checkAuth();
+      await loadTasks();
       setStatusMessage('Вы вошли в систему.');
     } catch (error) {
       setStatusMessage('Не удалось войти.');
