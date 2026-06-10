@@ -1,6 +1,6 @@
 import TaskCard from './TaskCard';
 
-export default function TaskList({ tasks, onToggleComplete, onDelete }) {
+export default function TaskList({ tasks, onSaveTask, onDelete }) {
   return (
     <div className="task-list">
       <div className="task-list-header">
@@ -12,7 +12,7 @@ export default function TaskList({ tasks, onToggleComplete, onDelete }) {
           <TaskCard
             key={task.id}
             task={task}
-            onToggleComplete={onToggleComplete}
+            onSaveTask={onSaveTask}
             onDelete={onDelete}
           />
         ))}

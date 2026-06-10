@@ -21,7 +21,7 @@ export default function App() {
     setActiveModal,
     handleCreate,
     handleDelete,
-    handleToggleComplete,
+    handleSaveTask,
     handleRegister,
     handleLogin,
     handleLogout,
@@ -50,7 +50,7 @@ export default function App() {
             />
             <TaskList
               tasks={tasks}
-              onToggleComplete={handleToggleComplete}
+              onSaveTask={handleSaveTask}
               onDelete={handleDelete}
             />
           </section>

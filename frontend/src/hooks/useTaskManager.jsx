@@ -2,16 +2,27 @@ import { useEffect, useState } from 'react';
 import apiClient from '../api/apiClient';
 
 export const PRIORITIES = ['high', 'medium', 'low'];
+export const STATUS_OPTIONS = [
+  { value: 'new', label: 'Новая' },
+  { value: 'in_progress', label: 'В работе' },
+  { value: 'done', label: 'Выполнена' },
+];
 
 function normalizeTasks(response) {
-  return Array.isArray(response?.data) ? response.data : [];
+  return Array.isArray(response?.data)
+    ? response.data.map((task) => ({
+        status: task.status || 'new',
+        createdAt: task.created_at || new Date().toISOString(),
+        ...task,
+      }))
+    : [];
 }
 
 export function useTaskManager() {
   const [tasks, setTasks] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const [taskForm, setTaskForm] = useState({ title: '', category: '', priority: 'medium' });
+  const [taskForm, setTaskForm] = useState({ title: '', category: '', priority: 'medium', status: 'new' });
   const [authFields, setAuthFields] = useState({ email: '', password: '', name: '' });
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
@@ -41,9 +52,13 @@ export function useTaskManager() {
 
     try {
       setIsCreating(true);
-      await apiClient.post('/tasks', taskForm);
+      await apiClient.post('/tasks', {
+        ...taskForm,
+        status: 'new',
+        createdAt: new Date().toISOString(),
+      });
       await loadTasks();
-      setTaskForm({ title: '', category: '', priority: 'medium' });
+      setTaskForm({ title: '', category: '', priority: 'medium', status: 'new' });
       setStatusMessage('Задача создана.');
     } catch (error) {
       setStatusMessage('Ошибка при создании задачи.');
@@ -61,13 +76,13 @@ export function useTaskManager() {
     }
   };
 
-  const handleToggleComplete = async (task) => {
+  const handleSaveTask = async (task, updatedTask) => {
     try {
-      const updatedTask = { ...task, completed: !task.completed };
       await apiClient.put(`/tasks/${task.id}`, updatedTask);
       setTasks((current) => current.map((t) => (t.id === task.id ? updatedTask : t)));
     } catch (error) {
       setStatusMessage('Не удалось обновить задачу.');
+      throw error;
     }
   };
 
@@ -138,7 +153,7 @@ export function useTaskManager() {
     setActiveModal,
     handleCreate,
     handleDelete,
-    handleToggleComplete,
+    handleSaveTask,
     handleRegister,
     handleLogin,
     handleLogout,
