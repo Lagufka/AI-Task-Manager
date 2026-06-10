@@ -315,7 +315,7 @@ p
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  align-items: flex-start;
+  align-items: stretch;
   padding: 20px 24px;
   border-radius: 18px;
   background: #f9fafb;
@@ -328,6 +328,29 @@ p
 {
   border-color: #d1d5db;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.task-actions
+{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-self: flex-end;
+  gap: 10px;
+}
+
+.task-actions .app-button:not(.danger)
+{
+  padding: 10px 18px;
+  background: #f3f4f6;
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.task-actions .app-button:not(.danger):hover
+{
+  background: #e5e7eb;
 }
 
 .task-card.completed
@@ -595,6 +618,29 @@ p
   .task-card.completed .task-meta
   {
     color: #6b6b7a;
+  }
+
+  .app-button
+  {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .app-button:hover
+  {
+    background: #8b5cf6;
+  }
+
+  .task-actions .app-button:not(.danger)
+  {
+    background: #23232c;
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .task-actions .app-button:not(.danger):hover
+  {
+    background: #2c2c34;
   }
 
   .app-button.secondary
