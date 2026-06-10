@@ -1,0 +1,43 @@
+import { PRIORITIES } from '../hooks/useTaskManager';
+
+export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLoading, statusMessage }) {
+  return (
+    <div className="task-form-card">
+      <h2>Создать новую задачу</h2>
+      <textarea
+        className="task-input"
+        placeholder="Описание задачи"
+        value={taskForm.title}
+        onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+      />
+      <div className="task-row">
+        <label className="field-group">
+          Приоритет
+          <select
+            value={taskForm.priority}
+            onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
+          >
+            {PRIORITIES.map((priority) => (
+              <option key={priority} value={priority}>
+                {priority}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field-group">
+          Категория
+          <input
+            type="text"
+            placeholder="Дом, Работа, Хобби"
+            value={taskForm.category}
+            onChange={(e) => setTaskForm({ ...taskForm, category: e.target.value })}
+          />
+        </label>
+      </div>
+      <button className="app-button" onClick={onCreate} disabled={isLoading}>
+        {isLoading ? 'Сохраняем...' : 'Создать задачу'}
+      </button>
+      {statusMessage && <p className="form-message">{statusMessage}</p>}
+    </div>
+  );
+}
