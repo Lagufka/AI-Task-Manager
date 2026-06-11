@@ -9,13 +9,17 @@ export const STATUS_OPTIONS = [
 ];
 
 function normalizeTasks(response) {
-  return Array.isArray(response?.data)
-    ? response.data.map((task) => ({
-        status: task.status || 'new',
-        createdAt: task.created_at || new Date().toISOString(),
-        ...task,
-      }))
-    : [];
+  const data = response?.data;
+
+  const tasksArray = Array.isArray(data)
+    ? data
+    : Object.values(data);
+
+  return tasksArray.map((task) => ({
+    status: task.status || 'new',
+    createdAt: task.created_at || new Date().toISOString(),
+    ...task,
+  }));
 }
 
 export function useTaskManager() {
@@ -69,7 +73,7 @@ export function useTaskManager() {
 
   const handleDelete = async (id) => {
     try {
-      await apiClient.delete(`/tasks/${id}`);
+      await apiClient.delete(`/tasks/${ id }`);
       setTasks((current) => current.filter((task) => task.id !== id));
     } catch (error) {
       setStatusMessage('Не удалось удалить задачу.');
@@ -78,7 +82,7 @@ export function useTaskManager() {
 
   const handleSaveTask = async (task, updatedTask) => {
     try {
-      await apiClient.put(`/tasks/${task.id}`, updatedTask);
+      await apiClient.put(`/tasks/${ task.id }`, updatedTask);
       setTasks((current) => current.map((t) => (t.id === task.id ? updatedTask : t)));
     } catch (error) {
       setStatusMessage('Не удалось обновить задачу.');
