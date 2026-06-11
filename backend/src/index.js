@@ -26,10 +26,10 @@ if (!process.env.JWT_SECRET) {
 app.set('trust proxy', 1);
 
 if (NODE_ENV !== 'production') {
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+  app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+  }));
 }
 
 app.use(express.json());
@@ -168,7 +168,7 @@ app.post('/auth/register', (req, res) => {
   res.cookie('token', token, {
     httpOnly: true,
     secure: NODE_ENV === 'production',
-    sameSite: NODE_ENV === 'production' ? 'lax' : 'none',
+    sameSite: 'lax',
     maxAge: TOKEN_LIFETIME_HOURS * 60 * 60 * 1000
   });
 
@@ -194,7 +194,7 @@ app.post('/auth/login', (req, res) => {
   res.cookie('token', token, {
     httpOnly: true,
     secure: NODE_ENV === 'production',
-    sameSite: NODE_ENV === 'production' ? 'lax' : 'none',
+    sameSite: 'lax',
     maxAge: TOKEN_LIFETIME_HOURS * 60 * 60 * 1000
   });
 
@@ -206,7 +206,7 @@ app.post('/auth/logout', (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: NODE_ENV === 'production' ? 'lax' : 'none',
+    sameSite: 'lax',
     expires: new Date(0)
   });
 
@@ -221,7 +221,7 @@ app.get('/tasks', authenticateToken, (req, res) => {
   const tasks = getTasks(req.user.userId);
 
   res.status(200).json({
-    data: tasks
+    ...tasks
   });
 });
 
