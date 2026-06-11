@@ -1,10 +1,10 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const app = express();
 
 
-app.set('trust proxy', 1);
 
 
 const TOKEN_LIFETIME_HOURS = 24;
@@ -22,6 +22,15 @@ if (!process.env.JWT_SECRET) {
 
 
 // ======= Middleware =======
+
+app.set('trust proxy', 1);
+
+if (NODE_ENV !== 'production') {
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+}
 
 app.use(express.json());
 app.use(cookieParser());
