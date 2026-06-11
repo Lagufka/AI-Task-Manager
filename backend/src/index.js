@@ -236,8 +236,6 @@ app.post('/tasks', authenticateToken, (req, res) => {
     priority
   });
 
-  console.log('(DEMO) New task created:', newTask);
-
   res.status(201).send();
 });
 
