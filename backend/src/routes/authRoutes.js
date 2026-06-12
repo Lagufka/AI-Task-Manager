@@ -2,12 +2,23 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { getUserByEmail, getUserByCredentials, createUser } = require('../services/data');
 const { JWT_SECRET, TOKEN_LIFETIME_HOURS, NODE_ENV } = require('../services/config');
+const { validateEmail, validatePassword } = require('../utils/validators');
 
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    const emailErrors = validateEmail(email);
+    if (emailErrors.length > 0) {
+      return res.status(400).json({ error: emailErrors[0] });
+    }
+
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors.length > 0) {
+      return res.status(400).json({ error: passwordErrors[0] });
+    }
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
