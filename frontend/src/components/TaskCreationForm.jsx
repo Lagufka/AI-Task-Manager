@@ -4,11 +4,17 @@ export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLo
   return (
     <div className="task-form-card">
       <h2>Создать новую задачу</h2>
-      <textarea
-        className="task-input"
-        placeholder="Описание задачи"
+      <input
+        className="task-input task-title-input"
+        placeholder="Заголовок задачи"
         value={taskForm.title}
         onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+      />
+      <textarea
+        className="task-input task-description-input"
+        placeholder="Описание задачи"
+        value={taskForm.description}
+        onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
       />
       <div className="task-row">
         <label className="field-group">

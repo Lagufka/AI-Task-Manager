@@ -4,12 +4,16 @@ import { PRIORITIES, STATUS_OPTIONS } from '../hooks/useTaskManager';
 export default function TaskCard({ task, onSaveTask, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [draftTitle, setDraftTitle] = useState(task.title || '');
+  const [draftDescription, setDraftDescription] = useState(task.description || '');
   const [draftPriority, setDraftPriority] = useState(task.priority || 'medium');
   const [draftCategory, setDraftCategory] = useState(task.category || '');
   const [draftStatus, setDraftStatus] = useState(task.status || 'new');
 
   useEffect(() => {
     if (!isEditing) {
+      setDraftTitle(task.title || '');
+      setDraftDescription(task.description || '');
       setDraftPriority(task.priority || 'medium');
       setDraftCategory(task.category || '');
       setDraftStatus(task.status || 'new');
@@ -37,6 +41,8 @@ export default function TaskCard({ task, onSaveTask, onDelete }) {
   const handleSave = async () => {
     const updatedTask = {
       ...task,
+      title: draftTitle,
+      description: draftDescription,
       priority: draftPriority,
       category: draftCategory,
       status: draftStatus,
@@ -46,6 +52,8 @@ export default function TaskCard({ task, onSaveTask, onDelete }) {
     try {
       await onSaveTask(task, updatedTask);
     } catch (error) {
+      setDraftTitle(task.title || '');
+      setDraftDescription(task.description || '');
       setDraftPriority(task.priority || 'medium');
       setDraftCategory(task.category || '');
       setDraftStatus(task.status || 'new');
@@ -58,7 +66,27 @@ export default function TaskCard({ task, onSaveTask, onDelete }) {
   return (
     <article className={`task-card status-${task.status}`}>
       <div className="task-content">
-        <h3>{task.title}</h3>
+        {isEditing ? (
+          <input
+            className="task-card-title-input"
+            value={draftTitle}
+            onChange={(e) => setDraftTitle(e.target.value)}
+            placeholder="Заголовок задачи"
+          />
+        ) : (
+          <h3>{task.title}</h3>
+        )}
+        
+        {isEditing ? (
+          <textarea
+            className="task-card-description-input"
+            value={draftDescription}
+            onChange={(e) => setDraftDescription(e.target.value)}
+            placeholder="Описание задачи"
+          />
+        ) : (
+          task.description && <p className="task-description">{task.description}</p>
+        )}
         <p className="task-meta">
           Приоритет:{' '}
           {isEditing ? (

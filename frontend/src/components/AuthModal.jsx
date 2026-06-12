@@ -20,17 +20,6 @@ export default function AuthModal({
           </button>
         </div>
         <div className="modal-body">
-          {activeModal === 'register' && (
-            <label className="field-group">
-              Имя
-              <input
-                type="text"
-                value={authFields.name}
-                onChange={(e) => setAuthFields({ ...authFields, name: e.target.value })}
-                placeholder="Ваше имя"
-              />
-            </label>
-          )}
           <label className="field-group">
             Email
             <input

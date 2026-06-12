@@ -101,7 +101,7 @@ export function useTaskManager() {
 
       await apiClient.post('/auth/register', payload);
       setActiveModal(null);
-      setAuthFields({ email: '', password: '', name: '' });
+      setAuthFields({ email: '', password: '' });
       await loadTasks();
       setStatusMessage('Регистрация прошла успешно.');
     } catch (error) {
@@ -121,7 +121,7 @@ export function useTaskManager() {
 
       await apiClient.post('/auth/login', payload);
       setActiveModal(null);
-      setAuthFields({ email: '', password: '', name: '' });
+      setAuthFields({ email: '', password: '' });
       await loadTasks();
       setStatusMessage('Вы вошли в систему.');
     } catch (error) {

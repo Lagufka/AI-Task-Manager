@@ -214,6 +214,23 @@ p
   box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
+.task-title-input
+{
+  min-height: auto;
+  max-height: none;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  resize: none;
+  padding: 14px 16px;
+}
+
+.task-description-input
+{
+  min-height: 100px;
+  max-height: 300px;
+}
+
 .task-row
 {
   display: grid;
@@ -420,6 +437,63 @@ p
   transition: all 0.2s ease;
 }
 
+.task-card-title-input
+{
+  width: 100%;
+  font-family: var(--heading);
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  background: #f9fafb;
+  color: var(--text-h);
+  transition: border-color 0.2s ease;
+}
+
+.task-card-title-input:focus
+{
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-bg);
+}
+
+.task-description
+{
+  margin: 0 0 12px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.task-card-description-input
+{
+  width: 100%;
+  min-height: 80px;
+  max-height: 200px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: #f9fafb;
+  color: var(--text-h);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.task-card-description-input:focus
+{
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-bg);
+}
+
 .task-card.completed h3
 {
   text-decoration: line-through;
@@ -541,6 +615,8 @@ p
 
 
 
+
+
 @media (prefers-color-scheme: dark)
 {
   :root
@@ -618,6 +694,21 @@ p
   .task-card.completed .task-meta
   {
     color: #6b6b7a;
+  }
+
+  .task-card-title-input,
+  .task-card-description-input
+  {
+    background: #1c1c24;
+    border-color: #2c2c34;
+    color: var(--text-h);
+  }
+
+  .task-card-title-input:focus,
+  .task-card-description-input:focus
+  {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-bg);
   }
 
   .app-button
