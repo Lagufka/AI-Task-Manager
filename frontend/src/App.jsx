@@ -5,6 +5,7 @@ import EmptyState from './components/EmptyState';
 import TaskCreationForm from './components/TaskCreationForm';
 import TaskList from './components/TaskList';
 import AuthModal from './components/AuthModal';
+import Toast from './components/Toast';
 
 export default function App() {
   const {
@@ -13,7 +14,7 @@ export default function App() {
     activeModal,
     taskForm,
     authFields,
-    statusMessage,
+    toast,
     isCreating,
     isLoadingAuth,
     setTaskForm,
@@ -25,6 +26,7 @@ export default function App() {
     handleRegister,
     handleLogin,
     handleLogout,
+    closeToast,
   } = useTaskManager();
 
   return (
@@ -36,6 +38,8 @@ export default function App() {
         onLogout={handleLogout}
       />
 
+      {toast && <Toast message={toast.message} type={toast.type} onClose={closeToast} />}
+
       <main className="page-content">
         {isAuthenticated === false && <EmptyState />}
 
@@ -46,7 +50,6 @@ export default function App() {
               setTaskForm={setTaskForm}
               onCreate={handleCreate}
               isLoading={isCreating}
-              statusMessage={statusMessage}
             />
             <TaskList
               tasks={tasks}

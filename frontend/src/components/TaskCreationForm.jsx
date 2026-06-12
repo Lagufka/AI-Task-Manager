@@ -1,6 +1,6 @@
 import { PRIORITIES } from '../hooks/useTaskManager';
 
-export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLoading, statusMessage }) {
+export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLoading }) {
   return (
     <div className="task-form-card">
       <h2>Создать новую задачу</h2>
@@ -43,7 +43,6 @@ export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLo
       <button className="app-button" onClick={onCreate} disabled={isLoading}>
         {isLoading ? 'Сохраняем...' : 'Создать задачу'}
       </button>
-      {statusMessage && <p className="form-message">{statusMessage}</p>}
     </div>
   );
 }

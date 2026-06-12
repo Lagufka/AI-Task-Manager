@@ -26,11 +26,23 @@ export function useTaskManager() {
   const [tasks, setTasks] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const [taskForm, setTaskForm] = useState({ title: '', category: '', priority: 'medium', status: 'new' });
-  const [authFields, setAuthFields] = useState({ email: '', password: '', name: '' });
-  const [statusMessage, setStatusMessage] = useState('');
+  const [taskForm, setTaskForm] = useState({ title: '', description: '', category: '', priority: 'medium', status: 'new' });
+  const [authFields, setAuthFields] = useState({ email: '', password: '' });
+  const [toast, setToast] = useState(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+
+  const showToast = (message, type = 'info') => {
+    setToast({ message, type });
+  };
+
+  const closeToast = () => {
+    setToast(null);
+  };
+
+  const getErrorMessage = (error) => {
+    return error?.response?.data?.error || error?.message || 'Произошла ошибка';
+  };
 
   const loadTasks = async () => {
     try {
@@ -50,7 +62,7 @@ export function useTaskManager() {
 
   const handleCreate = async () => {
     if (!taskForm.title.trim()) {
-      setStatusMessage('Пожалуйста, введите заголовок задачи.');
+      showToast('Пожалуйста, введите заголовок задачи.', 'error');
       return;
     }
 
@@ -62,10 +74,10 @@ export function useTaskManager() {
         createdAt: new Date().toISOString(),
       });
       await loadTasks();
-      setTaskForm({ title: '', category: '', priority: 'medium', status: 'new' });
-      setStatusMessage('Задача создана.');
+      setTaskForm({ title: '', description: '', category: '', priority: 'medium', status: 'new' });
+      showToast('Задача создана.', 'success');
     } catch (error) {
-      setStatusMessage('Ошибка при создании задачи.');
+      showToast(getErrorMessage(error), 'error');
     } finally {
       setIsCreating(false);
     }
@@ -75,8 +87,9 @@ export function useTaskManager() {
     try {
       await apiClient.delete(`/tasks/${ id }`);
       setTasks((current) => current.filter((task) => task.id !== id));
+      showToast('Задача удалена.', 'success');
     } catch (error) {
-      setStatusMessage('Не удалось удалить задачу.');
+      showToast(getErrorMessage(error), 'error');
     }
   };
 
@@ -84,8 +97,9 @@ export function useTaskManager() {
     try {
       await apiClient.put(`/tasks/${ task.id }`, updatedTask);
       setTasks((current) => current.map((t) => (t.id === task.id ? updatedTask : t)));
+      showToast('Задача обновлена.', 'success');
     } catch (error) {
-      setStatusMessage('Не удалось обновить задачу.');
+      showToast(getErrorMessage(error), 'error');
       throw error;
     }
   };
@@ -96,16 +110,15 @@ export function useTaskManager() {
       const payload = {
         email: authFields.email,
         password: authFields.password,
-        name: authFields.name,
       };
 
       await apiClient.post('/auth/register', payload);
       setActiveModal(null);
       setAuthFields({ email: '', password: '' });
       await loadTasks();
-      setStatusMessage('Регистрация прошла успешно.');
+      showToast('Регистрация прошла успешно.', 'success');
     } catch (error) {
-      setStatusMessage('Не удалось зарегистрироваться.');
+      showToast(getErrorMessage(error), 'error');
     } finally {
       setIsLoadingAuth(false);
     }
@@ -123,9 +136,9 @@ export function useTaskManager() {
       setActiveModal(null);
       setAuthFields({ email: '', password: '' });
       await loadTasks();
-      setStatusMessage('Вы вошли в систему.');
+      showToast('Вы вошли в систему.', 'success');
     } catch (error) {
-      setStatusMessage('Не удалось войти.');
+      showToast(getErrorMessage(error), 'error');
     } finally {
       setIsLoadingAuth(false);
     }
@@ -138,7 +151,7 @@ export function useTaskManager() {
     } finally {
       setIsAuthenticated(false);
       setTasks([]);
-      setStatusMessage('Вы вышли.');
+      showToast('Вы вышли.', 'info');
       setActiveModal(null);
     }
   };
@@ -149,7 +162,7 @@ export function useTaskManager() {
     activeModal,
     taskForm,
     authFields,
-    statusMessage,
+    toast,
     isCreating,
     isLoadingAuth,
     setTaskForm,
@@ -161,5 +174,7 @@ export function useTaskManager() {
     handleRegister,
     handleLogin,
     handleLogout,
+    showToast,
+    closeToast,
   };
 }
