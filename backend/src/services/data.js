@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const argon2 = require('argon2');
 const { POSTGRES_USER, POSTGRES_HOST, POSTGRES_DATABASE, POSTGRES_PASSWORD, POSTGRES_PORT } = require('../services/config');
 
 const requiredEnvVars = ['POSTGRES_USER', 'POSTGRES_HOST', 'POSTGRES_DATABASE', 'POSTGRES_PASSWORD', 'POSTGRES_PORT'];
@@ -32,14 +33,20 @@ const getUserByEmail = async (email) => {
 };
 
 const getUserByCredentials = async (email, password) => {
-  const query = 'SELECT id, email FROM users WHERE email = $1 AND password_hash = $2 LIMIT 1';
-  const { rows } = await pgPool.query(query, [email, password]); // HASH PASSWORD!
-  return rows[0] || null;
+  const query = 'SELECT id, email, password_hash FROM users WHERE email = $1 LIMIT 1';
+  const { rows } = await pgPool.query(query, [email]);
+  if (!rows[0]) return null;
+
+  const isMatch = await argon2.verify(rows[0].password_hash, password);
+  if (!isMatch) return null;
+
+  return rows[0];
 };
 
-const createUser = async ({ email, password, name }) => {
+const createUser = async ({ email, password }) => {
+  const hashedPassword = await argon2.hash(password);
   const query = 'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email';
-  const { rows } = await pgPool.query(query, [email, password]); // HASH PASSWORD!
+  const { rows } = await pgPool.query(query, [email, hashedPassword]);
   return rows[0];
 };
 
