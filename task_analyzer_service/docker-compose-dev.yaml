@@ -1,6 +1,8 @@
 services:
   analyzer:
-    build: .
+    build: 
+      context: .
+      dockerfile: python.Dockerfile
     container_name: python_task_service
     ports:
       - ${PORT:-8000}:8000
@@ -15,7 +17,9 @@ services:
         condition: service_healthy
 
   ollama:
-    image: ollama/ollama:0.30.6
+    build:
+      context: .
+      dockerfile: ollama.Dockerfile
     container_name: ollama
     volumes:
       - dev_ollama_models:/root/.ollama

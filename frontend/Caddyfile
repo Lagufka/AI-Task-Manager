@@ -1,0 +1,27 @@
+{
+    auto_https disable_redirects
+}
+
+http://localhost {
+    redir https://localhost{uri}
+}
+
+https://localhost {
+    tls internal
+
+    handle /auth* {
+        reverse_proxy backend:3333
+    }
+
+    handle /tasks* {
+        reverse_proxy backend:3333
+    }
+
+    handle {
+        root * /usr/share/caddy
+        try_files {path} /index.html
+        file_server
+    }
+}
+
+# Те же правила для домена и Caddy сам настроит SSL сертификат от Let's Encrypt
