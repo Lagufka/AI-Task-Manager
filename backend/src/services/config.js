@@ -8,7 +8,7 @@ const POSTGRES_DATABASE = process.env.PG_DATABASE || 'appdb';
 const POSTGRES_USER = process.env.PG_USER || 'appuser';
 const POSTGRES_PASSWORD = process.env.PG_PASSWORD || 'secret';
 
-
+const TASK_ANALYZER_URL = process.env.TASK_ANALYZER_URL || 'http://localhost:8000';
 
 module.exports = {
   TOKEN_LIFETIME_HOURS,
@@ -18,5 +18,6 @@ module.exports = {
   POSTGRES_PORT,
   POSTGRES_DATABASE,
   POSTGRES_USER,
-  POSTGRES_PASSWORD
+  POSTGRES_PASSWORD,
+  TASK_ANALYZER_URL
 };
