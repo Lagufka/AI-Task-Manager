@@ -6,7 +6,7 @@
 -
 Все дейсвтия производятся из `task_analyzer_service/`
 ```bash
-docker compose up -f docker-compose-dev.yaml -d --build 
+docker compose -f docker-compose-dev.yaml up -d --build 
 ```
 Запускается 2 контейнеера. Один с ollama, в котором лежит модель, второй python FastAPI, с `/analyze` эндпоинтом для обработки текста задач и отправки его в ollama.
 
