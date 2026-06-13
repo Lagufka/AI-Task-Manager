@@ -6,7 +6,7 @@ export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLo
       <h2>Создать новую задачу</h2>
       <input
         className="task-input task-title-input"
-        placeholder="Заголовок задачи"
+        placeholder="Заголовок задачи (обязательно)"
         value={taskForm.title}
         onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
       />
