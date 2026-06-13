@@ -17,11 +17,17 @@ async def lifespan(app: FastAPI):
         print("Model warmup failed:", exc)
     yield
 
-app = FastAPI(lifespan=lifespan)
-
 
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 if ENVIRONMENT == "development": print("Running in development mode")
+
+
+app = FastAPI(lifespan=lifespan,
+              docs_url="/docs" if ENVIRONMENT == "development" else None,
+              redoc_url="/redoc" if ENVIRONMENT == "development" else None,
+              openapi_url="/openapi.json" if ENVIRONMENT == "development" else None)
+
+
 
 OLLAMA_URL = (
     os.environ.get("OLLAMA_HOST", "http://host.docker.internal:11434") + "/api/generate"

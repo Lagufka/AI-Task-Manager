@@ -14,7 +14,7 @@ docker compose up -f docker-compose-dev.yaml -d --build
 
 
 Переменные окружения
-- `ENVIRONMENT` — "development|production". Определяет будет ли hot reload у FastAPI
+- `ENVIRONMENT` — "development|production". Определяет будет ли hot reload у FastAPI и отключает swagger
 - `PORT` — порт FastAPI на хостовой машине
 - `OLLAMA_MODEL` — модель которую скачает и запустит ollama
 
