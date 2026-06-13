@@ -1,0 +1,33 @@
+services:
+  analyzer:
+    build: .
+    container_name: python_task_service
+    ports:
+      - ${PORT:-8000}:8000
+    volumes:
+      - ./src/main.py:/app/main.py
+    environment:
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - OLLAMA_HOST=http://ollama:11434
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:0.30.6
+    container_name: ollama
+    volumes:
+      - dev_ollama_models:/root/.ollama
+      - ./ollama_startup.sh:/scripts/ollama_startup.sh
+    environment:
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+    entrypoint: [ "/bin/bash", "/scripts/ollama_startup.sh" ]
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list | grep -q '${OLLAMA_MODEL}' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  dev_ollama_models:
