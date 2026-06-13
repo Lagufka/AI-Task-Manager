@@ -30,7 +30,7 @@ app = FastAPI(lifespan=lifespan,
 
 
 OLLAMA_URL = (
-    os.environ.get("OLLAMA_HOST", "http://host.docker.internal:11434") + "/api/generate"
+    os.environ.get("OLLAMA_URL", "http://host.docker.internal:11434") + "/api/generate"
 )
 MODEL_NAME = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
 
