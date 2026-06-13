@@ -11,6 +11,11 @@ export const STATUS_OPTIONS = [
 function normalizeTasks(response) {
   const data = response?.data;
 
+  const contentType = response.headers['content-type'];
+  if (!contentType || !contentType.includes('application/json')) { 
+    throw new Error("response.data isn't json");
+  }
+
   const tasksArray = Array.isArray(data)
     ? data
     : Object.values(data);
