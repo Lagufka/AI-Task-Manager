@@ -249,6 +249,12 @@ p
   font-weight: 500;
 }
 
+  .field-note
+  {
+    color: #4b5563;
+    font-size: 12px;
+  }
+
 .field-group input,
 .field-group select
 {
@@ -749,6 +755,12 @@ p
   {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-bg);
+  }
+
+  .field-note
+  {
+    color: #4b5563;
+    font-size: 12px;
   }
 
   .task-card

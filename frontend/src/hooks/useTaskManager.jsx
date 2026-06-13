@@ -26,7 +26,7 @@ export function useTaskManager() {
   const [tasks, setTasks] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
-  const [taskForm, setTaskForm] = useState({ title: '', description: '', category: '', priority: 'medium', status: 'new' });
+  const [taskForm, setTaskForm] = useState({ title: '', description: '', category: '', priority: '', status: 'new' });
   const [authFields, setAuthFields] = useState({ email: '', password: '' });
   const [toast, setToast] = useState(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
@@ -74,7 +74,7 @@ export function useTaskManager() {
         createdAt: new Date().toISOString(),
       });
       await loadTasks();
-      setTaskForm({ title: '', description: '', category: '', priority: 'medium', status: 'new' });
+      setTaskForm({ title: '', description: '', category: '', priority: '', status: 'new' });
       showToast('Задача создана.', 'success');
     } catch (error) {
       showToast(getErrorMessage(error), 'error');

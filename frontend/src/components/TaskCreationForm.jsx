@@ -1,6 +1,6 @@
 import { PRIORITIES } from '../hooks/useTaskManager';
 
-export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLoading }) {
+export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLoading, statusMessage }) {
   return (
     <div className="task-form-card">
       <h2>Создать новую задачу</h2>
@@ -23,6 +23,7 @@ export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLo
             value={taskForm.priority}
             onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
           >
+            <option value="">Авто (по тексту задачи)</option>
             {PRIORITIES.map((priority) => (
               <option key={priority} value={priority}>
                 {priority}
@@ -40,9 +41,13 @@ export default function TaskCreationForm({ taskForm, setTaskForm, onCreate, isLo
           />
         </label>
       </div>
+      <p className="field-note">
+        *Если приоритет или категория будут пустыми, они будут сгенерированы на основе текста задачи.
+      </p>
       <button className="app-button" onClick={onCreate} disabled={isLoading}>
         {isLoading ? 'Сохраняем...' : 'Создать задачу'}
       </button>
+      {statusMessage && <p className="form-message">{statusMessage}</p>}
     </div>
   );
 }
