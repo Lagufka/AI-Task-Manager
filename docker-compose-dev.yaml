@@ -101,7 +101,7 @@ services:
       dockerfile: ollama.Dockerfile
     container_name: dev_ollama
     volumes:
-      - dev_ollama_models:/root/.ollama
+      - ollama_models:/root/.ollama
     environment:
       - OLLAMA_MODEL=${OLLAMA_MODEL}
     healthcheck:
@@ -114,9 +114,8 @@ services:
       backend_network:
 
 volumes:
-  postgres_data:
+  dev_postgres_data:
   ollama_models:
-  caddy_data:
 
 networks:
   backend_network:
