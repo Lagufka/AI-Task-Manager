@@ -21,7 +21,7 @@ app.set('trust proxy', 1);
 
 if (NODE_ENV !== 'production') {
   app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'http://frontend:5173'],
     credentials: true
   }));
 }

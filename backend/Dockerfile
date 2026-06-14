@@ -15,6 +15,8 @@ RUN npm ci
 
 RUN mkdir -p src && chown nodejs:nodejs src
 
+COPY --chown=nodejs:nodejs ./src ./src
+
 USER nodejs
 
 CMD [ "npm" , "run" , "dev" ]
