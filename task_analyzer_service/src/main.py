@@ -88,22 +88,38 @@ class AnalysisOutput(BaseModel):
 async def analyze(input_data: TextInput):
     prompt = BASE_PROMPT.format(text=input_data.text)
 
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            OLLAMA_URL,
-            json={
-                "model": MODEL_NAME,
-                "prompt": prompt,
-                "stream": False,
-                "format": "json",
-                "options": {"num_predict": 100},
-            },
-            timeout=60.0,
-        )
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                OLLAMA_URL,
+                json={
+                    "model": MODEL_NAME,
+                    "prompt": prompt,
+                    "stream": False,
+                    "format": "json",
+                    "options": {"num_predict": 100},
+                },
+                timeout=60.0,
+            )
+            response.raise_for_status()
 
-    model_answer = response.json()["response"]
-    if model_answer == "":
-        model_answer = response.json()["thinking"]
+    except httpx.TimeoutException:
+        print(f"Timeout while calling Ollama API")
+        return AnalysisOutput(priority="medium", category="other")
+    except httpx.HTTPError as e:
+        print(f"HTTP error from Ollama: {e}")
+        return AnalysisOutput(priority="medium", category="other")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return AnalysisOutput(priority="medium", category="other")
+
+    response_json = response.json()
+    model_answer = response_json.get("response", "")
+    if not model_answer:
+        model_answer = response_json.get("message", {}).get("content", "")
+        if not model_answer:
+            print(f"Empty response from model. Full response: {response_json}")
+            return AnalysisOutput(priority="medium", category="other")
 
     try:
         model_answer = model_answer.strip().replace("```json", "").replace("```", "")
@@ -115,8 +131,30 @@ async def analyze(input_data: TextInput):
             answer_json["category"] = "other"
 
         return answer_json
-    except json.JSONDecodeError:  # Модель вернула не json
+    except json.JSONDecodeError:
         return {"priority": "medium", "category": "other"}
+
+
+@app.get("/health")
+async def health_check():
+    """Проверка доступности Ollama"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                OLLAMA_URL.replace("/api/generate", "/api/tags"),
+                timeout=5.0
+            )
+            return {
+                "status": "healthy",
+                "ollama_available": response.status_code == 200,
+                "model": MODEL_NAME
+            }
+    except Exception:
+        return {
+            "status": "degraded",
+            "ollama_available": False,
+            "model": MODEL_NAME
+        }
 
 
 
