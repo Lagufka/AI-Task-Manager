@@ -21,7 +21,7 @@ export default function PageHeader({ isAuthenticated, onLogin, onRegister, onLog
   return (
     <header className="page-header">
       <div>
-        <h1>Менеджер задач</h1>
+        <h1>AI Task Manager</h1>
         <p>Управляйте задачами, устанавливайте приоритет и категории.</p>
       </div>
       <div className="header-actions">{authButtons}</div>
