@@ -44,7 +44,7 @@ docker compose -f docker-compose-dev.yaml --env-file .env.dev up -d --build
 2. Запустите:
 
 ```bash
-docker compose -f docker-compose-prod.yaml --env-file .env.dev up -d --build
+docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 ```
 
 3. В продакшене фронтенд запускается в контейнере Caddy, который отдает билд статику React и производит reverse proxy на бэкенд. Он доступен на `http://localhost` (порт 80), который автоматически редиректит на `https`.
