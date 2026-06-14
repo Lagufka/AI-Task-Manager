@@ -1,16 +1,18 @@
+name: dev-esoft-practice
+
 services:
   analyzer:
     build: 
       context: .
       dockerfile: python.Dockerfile
-    container_name: python_task_service
+    container_name: dev_analyzer
     ports:
-      - ${PORT:-8000}:8000
+      - 8000:8000
     volumes:
       - ./src/main.py:/app/main.py
     environment:
       - OLLAMA_MODEL=${OLLAMA_MODEL}
-      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_URL=http://ollama:11434
       - ENVIRONMENT=${ENVIRONMENT:-development}
     depends_on:
       ollama:
@@ -20,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: ollama.Dockerfile
-    container_name: ollama
+    container_name: dev_ollama
     volumes:
       - dev_ollama_models:/root/.ollama
       - ./ollama_startup.sh:/scripts/ollama_startup.sh

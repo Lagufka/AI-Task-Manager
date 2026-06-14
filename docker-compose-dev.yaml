@@ -74,7 +74,7 @@ services:
       retries: 3
       start_period: 5s
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - dev_postgres_data:/var/lib/postgresql/data
     networks:
       backend_network:
 
@@ -101,7 +101,7 @@ services:
       dockerfile: ollama.Dockerfile
     container_name: dev_ollama
     volumes:
-      - ollama_models:/root/.ollama
+      - dev_ollama_models:/root/.ollama
     environment:
       - OLLAMA_MODEL=${OLLAMA_MODEL}
     healthcheck:
