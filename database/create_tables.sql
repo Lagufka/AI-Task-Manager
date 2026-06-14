@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR NOT NULL,
+    title VARCHAR,
     description TEXT,
     status VARCHAR NOT NULL,
     created_at TIMESTAMP NOT NULL,
