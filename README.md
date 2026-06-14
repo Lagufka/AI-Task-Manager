@@ -59,10 +59,10 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 
 Скрипты:
 
-- `npm run dev` — запуск разработки
-- `npm run build` — сборка
-- `npm run preview` — предпросмотр сборки
-- `npm run lint` — проверка ESLint
+- `npm run dev` - запуск разработки
+- `npm run build` - сборка
+- `npm run preview` - предпросмотр сборки
+- `npm run lint` - проверка ESLint
 
 ### `backend/`
 
@@ -73,8 +73,8 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 
 Скрипты:
 
-- `npm start` — запуск сервера
-- `npm run dev` — запуск с `nodemon`
+- `npm start` - запуск сервера
+- `npm run dev` - запуск с `nodemon`
 
 ### `database/`
 
@@ -83,8 +83,8 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 
 Таблицы:
 
-- `users` — `id`, `email`, `password_hash`
-- `tasks` — `id`, `user_id`, `title`, `description`, `category`, `priority`, `status`, `created_at`
+- `users` - `id`, `email`, `password_hash`
+- `tasks` - `id`, `user_id`, `title`, `description`, `category`, `priority`, `status`, `created_at`
 
 ### `task_analyzer_service/`
 
@@ -113,13 +113,13 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 
 ### Задачи
 
-- `GET /tasks` — получить список задач пользователя
-- `POST /tasks` — создать задачу
+- `GET /tasks` - получить список задач пользователя
+- `POST /tasks` - создать задачу
   - Тело: `{ "title": string, "description"?: string, "category"?: string, "priority"?: string }`
   - Если `category` или `priority` не указаны, сервис отдает текст задачи в `task_znzlyzer_service` для их предсказания
 
-- `PUT /tasks/:id` — обновить задачу
-- `DELETE /tasks/:id` — удалить задачу
+- `PUT /tasks/:id` - обновить задачу
+- `DELETE /tasks/:id` - удалить задачу
 
 Все маршруты `/tasks` требуют авторизации через JWT cookie.
 
@@ -136,5 +136,51 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 ```json
 { "priority": "medium", "category": "business" }
 ```
+Если анализатор недоступен или модель возвращает некорректный JSON, бэкенд по умолчанию использует `priority = medium` и `category = other`.  
 
-Если анализатор недоступен или модель возвращает некорректный JSON, бэкенд по умолчанию использует `priority = medium` и `category = other`.
+
+## Описание основных файлов
+
+### Корень проекта
+
+- `docker-compose-dev.yaml` - локальная Docker-композиция для всех сервисов.
+- `docker-compose-prod.yaml` - продакшен-композиция для запуска в Docker.
+- `README.md` - этот файл с инструкциями и описанием архитектуры.
+- `.env.dev`, `.env.prod`, `.env.example` - шаблоны и конфигурации переменных окружения.
+
+### frontend/
+
+- `package.json` - зависимости и npm-скрипты.
+- `vite.config.js` - конфигурация Vite.
+- `Dockerfile` - сборка фронтенда в образ.
+- `Caddyfile` - настройка статического сервера Caddy для продакшена.
+- `src/main.jsx` - точка входа приложения.
+- `src/App.jsx` - основной React-компонент.
+- `src/api/apiClient.js` - Axios-инстанс для запросов к бэкенду.
+- `src/components/` - UI-компоненты приложения.
+
+### backend/
+
+- `package.json` - зависимости и скрипты запуска.
+- `Dockerfile` - сборка бэкенда в образ.
+- `src/index.js` - точка входа сервера Express.
+- `src/routes/authRoutes.js` - регистрация, логин и логаут.
+- `src/routes/taskRoutes.js` - CRUD задачи и интеграция с анализатором.
+- `src/services/data.js` - работа с PostgreSQL и логика хранения данных.
+- `src/services/config.js` - чтение конфигурации из переменных окружения.
+- `src/middleware/middleware.js` - проверка JWT и защита маршрутов.
+- `src/utils/validators.js` - валидация email и паролей.
+
+### database/
+
+- `Dockerfile` - сборка PostgeSQL в образ.
+- `create_tables.sql` - инициализация таблиц `users` и `tasks`.
+
+### task_analyzer_service/
+
+- `src/main.py` - FastAPI-сервис анализа задач.
+- `requirements.txt` - Python-зависимости сервиса.
+- `python.Dockerfile` - Dockerfile для FastAPI-сервиса.
+- `ollama.Dockerfile` - Dockerfile для Ollama-модели.
+- `docker-compose-dev.yaml` - локальный файл запуска внутри директории.
+- `README.md` - документация для сервиса анализа задач.
