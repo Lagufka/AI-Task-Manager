@@ -1,0 +1,32 @@
+releases:
+  - name: database
+    chart: ./charts/postgres
+    values:
+      - configs/database_values.yaml
+
+  - name: ollama
+    chart: ./charts/ollama
+    values:
+      - configs/ollama_values.yaml
+
+  - name: task-analyzer
+    chart: ./charts/task-analyzer
+    needs:
+      - ollama
+    values:
+      - configs/task_analyzer_values.yaml
+
+  - name: backend
+    chart: ./charts/backend
+    needs:
+      - database
+      - task-analyzer
+    values:
+      - configs/backend_values.yaml
+
+  - name: frontend
+    chart: ./charts/frontend
+    needs:
+      - backend
+    values:
+      - configs/frontend_values.yaml
