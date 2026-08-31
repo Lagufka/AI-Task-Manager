@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analyzer
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: analyzer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: analyzer
+  template:
+    metadata:
+      labels:
+        app: analyzer
+    spec:
+      containers:
+      - name: analyzer
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.analyzer.port }}
+          name: http
+        env:
+        - name: OLLAMA_MODEL
+          value: "{{ .Values.analyzer.model }}"
+        - name: OLLAMA_URL
+          value: "{{ .Values.analyzer.ollamaUrl }}"
+        - name: ENVIRONMENT
+          value: "{{ .Values.analyzer.environment }}"
+        resources:
+          requests:
+            memory: "{{ .Values.resources.requests.memory }}"
+            cpu: "{{ .Values.resources.requests.cpu }}"
+          limits:
+            memory: "{{ .Values.resources.limits.memory }}"
+            cpu: "{{ .Values.resources.limits.cpu }}"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.analyzer.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.analyzer.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}

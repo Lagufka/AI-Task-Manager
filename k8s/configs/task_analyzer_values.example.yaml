@@ -1,0 +1,28 @@
+namespace: task-manager
+imagePullPolicy: Always
+replicaCount: 1
+
+image:
+  repository: registry/analyzer
+  tag: latest
+
+analyzer:
+  port: 8000
+  environment: production
+  model: "qwen2.5:1.5b" # Модель Ollama
+  ollamaUrl: "http://ollama:11434"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5

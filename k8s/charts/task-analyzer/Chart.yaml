@@ -1,0 +1,6 @@
+apiVersion: v2
+name: task-analyzer
+description: Task analyzer service with Ollama integration
+type: application
+version: 1.0.0
+appVersion: "latest"
