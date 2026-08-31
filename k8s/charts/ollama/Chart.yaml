@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ollama
+description: Ollama service for AI model hosting
+type: application
+version: 1.0.0
+appVersion: "latest"

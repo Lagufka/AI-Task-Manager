@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ollama
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: ollama
+spec:
+  serviceName: "ollama"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - {{ .Values.storage.node }}
+      containers:
+      - name: ollama
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.ollama.port }}
+        volumeMounts:
+        - name: ollama-storage
+          mountPath: /root/.ollama
+        env:
+        - name: OLLAMA_MODEL
+          value: "{{ .Values.ollama.model }}"
+        resources:
+          requests:
+            memory: "{{ .Values.resources.requests.memory }}"
+            cpu: "{{ .Values.resources.requests.cpu }}"
+          limits:
+            memory: "{{ .Values.resources.limits.memory }}"
+            cpu: "{{ .Values.resources.limits.cpu }}"
+  volumeClaimTemplates:
+  - metadata:
+      name: ollama-storage
+    spec:
+      storageClassName: "{{ .Values.storage.className }}"
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.storage.size }}

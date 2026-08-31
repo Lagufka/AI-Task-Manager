@@ -1,0 +1,25 @@
+namespace: task-manager
+imagePullPolicy: Always
+replicaCount: 1
+
+image:
+  repository: registry/ollama
+  tag: latest
+
+ollama:
+  model: "qwen2.5:1.5b"
+  port: 11434
+
+storage:
+  size: 5Gi
+  className: ollama-storage
+  path: /mnt/ollama
+  node: node2
+
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "1000m"
+  limits:
+    memory: "2Gi"
+    cpu: "2000m"
