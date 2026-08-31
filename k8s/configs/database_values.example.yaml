@@ -1,0 +1,33 @@
+namespace: task-manager
+imagePullPolicy: Always
+replicaCount: 1
+
+image:
+  repository: registry/database
+  tag: latest
+
+postgresql:
+  database: app_db
+  username: app_user
+  password: app_password
+
+storage:
+  size: 5Gi
+  className: database-storage
+  path: /mnt/database
+  node: node2
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 20
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
