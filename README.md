@@ -10,6 +10,8 @@
 - `backend/` - Express API с JWT-аутентификацией и интеграцией с сервисом анализа задач.
 - `database/` - контейнер PostgreSQL с SQL-скриптом инициализации таблиц.
 - `task_analyzer_service/` - FastAPI-сервис, который вызывает Ollama и возвращает категорию и приоритет задачи.
+- `k8s/` - Helm-чарты и конфигурации для развёртывания приложения через `helmfile`.
+
 
 ## Что делает проект
 
@@ -34,20 +36,49 @@ docker compose -f docker-compose-dev.yaml --env-file .env.dev up -d --build
 - Анализатор задач: `http://localhost:3000/analyze`
 - PostgreSQL: `localhost:5432`
 
-
 Так же каждый сервис можно запустить отдельно, про это можно прочитать в README файле в директориях сервисов.
 
+## Запуск через Helmfile
+
+Для деплоя в Kubernetes и инфраструктурного развёртывания используется Helmfile.
+
+1. Перейдите в каталог `k8s/`.
+
+2. Скопируйте все файлы с суффиксом `.example` в рабочие конфиги, удалив `.example` из имени файла. Например:
+
+```bash
+cp configs/backend_values.example.yaml configs/backend_values.yaml
+cp configs/database_values.example.yaml configs/database_values.yaml
+cp configs/frontend_values.example.yaml configs/frontend_values.yaml
+cp configs/ollama_values.example.yaml configs/ollama_values.yaml
+cp configs/task_analyzer_values.example.yaml configs/task_analyzer_values.yaml
+```
+
+3. Заполните созданные файлы конфигурации актуальными значениями для окружения: параметры базы данных, JWT-секреты, адреса сервисов и настройки Ollama.
+
+4. Запустите развёртывание:
+
+```bash
+helmfile apply
+```
+
+Файл `k8s/helmfile.yaml` подключает все Helm-чарты из `k8s/charts/` и использует значения из `k8s/configs/*.yaml`.
+
+> Важно: проект не создает Ingress Controller автоматически. Для корректной работы маршрутизации в Kubernetes у вас должен быть установлен и настроен отдельный ingress controller (например, Traefik).
+
+После деплоя приложение разворачивается по сервисам Kubernetes, а frontend доступен через Ingress/хостовые адреса, указанные в `k8s/configs/frontend_values.yaml`.
 
 ## Запуск в продакшене
 
-1. Создайте `.env.prod` с нужными значениями для базы данных, JWT и модели.
-2. Запустите:
+1. Скопируйте и заполните все `.example`-конфиги в `k8s/configs/`, убрав `.example` из имени файла.
+2. Проверьте значения для production-среды, особенно секреты, домены и ресурсы.
+3. Выполните:
 
 ```bash
-docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
+helmfile apply
 ```
 
-3. В продакшене фронтенд запускается в контейнере Caddy, который отдает билд статику React и производит reverse proxy на бэкенд. Он доступен на `http://localhost` (порт 80), который автоматически редиректит на `https`.
+4. В продакшене фронтенд и бэкенд разворачиваются через Helm-чарты, а маршрутизация и доступность сервисов задаются через конфиги chart values и Ingress. При этом ingress controller должен быть подготовлен отдельно в кластере.
 
 ## Сервисы
 
@@ -136,8 +167,7 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 ```json
 { "priority": "medium", "category": "business" }
 ```
-Если анализатор недоступен или модель возвращает некорректный JSON, бэкенд по умолчанию использует `priority = medium` и `category = other`.  
-
+Если анализатор недоступен или модель возвращает некорректный JSON, бэкенд по умолчанию использует `priority = medium` и `category = other`.
 
 ## Описание основных файлов
 
@@ -146,7 +176,9 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 - `docker-compose-dev.yaml` - локальная Docker-композиция для всех сервисов.
 - `docker-compose-prod.yaml` - продакшен-композиция для запуска в Docker.
 - `README.md` - этот файл с инструкциями и описанием архитектуры.
-- `.env.dev`, `.env.prod`, `.env.example` - шаблоны и конфигурации переменных окружения.
+- `k8s/` - Helm-чарты и ресурсы для деплоя через `helmfile`.
+- `k8s/helmfile.yaml` - описание релизов и зависимостей между сервисами.
+- `k8s/configs/*.example.yaml` - шаблоны настроек для Helm values; перед запуском копируются в файлы без `.example`.
 
 ### frontend/
 
@@ -184,3 +216,15 @@ docker compose -f docker-compose-prod.yaml --env-file .env.prod up -d --build
 - `ollama.Dockerfile` - Dockerfile для Ollama-модели.
 - `docker-compose-dev.yaml` - локальный файл запуска внутри директории.
 - `README.md` - документация для сервиса анализа задач.
+
+### k8s/
+
+- `helmfile.yaml` - главный файл с описанием релизов Helm и зависимостей между сервисами.
+- `charts/` - директория с Helm-чартами для каждого сервиса: `backend`, `frontend`, `postgres`, `ollama`, `task-analyzer`.
+- `charts/backend/` - чарт для API-сервиса: `deployment.yaml`, `service.yaml`, `configmap.yaml`, `secret.yaml`.
+- `charts/frontend/` - чарт для Веб-сервера, отдающего статику: `deployment.yaml`, `service.yaml`, `ingress.yaml`.
+- `charts/postgres/` - чарт для PostgreSQL: манифесты StatefulSet, Service, Secrets, PV.
+- `charts/ollama/` - чарт для Ollama и хранения моделей: `statefulset.yaml`, `service.yaml`, `pv.yaml`.
+- `charts/task-analyzer/` - чарт для FastAPI-сервиса анализа задач: `deployment.yaml`, `service.yaml`.
+- `configs/` - файлы values для Helm: `backend_values.yaml`, `frontend_values.yaml`, `database_values.yaml`, `ollama_values.yaml`, `task_analyzer_values.yaml` и их `.example`-версии.
+- `configs/*.example.yaml` - шаблоны конфигураций, которые следует копировать в рабочие файлы без суффикса `.example` перед запуском.
