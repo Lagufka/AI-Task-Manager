@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: {{ .Values.namespace }}
+data:
+  token-lifetime-hours: "{{ .Values.backend.tokenLifetimeHours }}"
+  postgres-db: "{{ .Values.postgresql.database }}"

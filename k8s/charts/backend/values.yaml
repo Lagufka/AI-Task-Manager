@@ -1,0 +1,44 @@
+# Default values for backend Helm chart
+
+namespace: task-manager
+imagePullPolicy: Always
+replicaCount: 1
+
+image:
+  repository: "registry/backend"
+  tag: "latest"
+
+backend:
+  port: 3333
+  environment: production
+  tokenLifetimeHours: "24"
+  jwtSecret: "jwt_secret"
+
+postgresql:
+  host: "postgres"
+  port: "5432"
+  database: "app_db"
+  username: "app_user"
+  password: "app_password"
+
+taskAnalyzer:
+  url: "http://analyzer:8000"
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 5
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 3

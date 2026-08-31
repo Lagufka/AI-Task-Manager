@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - containerPort: {{ .Values.backend.port }}
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "{{ .Values.backend.environment }}"
+        - name: TOKEN_LIFETIME_HOURS
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: token-lifetime-hours
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: jwt-secret
+        - name: POSTGRES_HOST
+          value: "{{ .Values.postgresql.host }}"
+        - name: POSTGRES_PORT
+          value: "{{ .Values.postgresql.port }}"
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-secrets
+              key: postgres-password
+        - name: TASK_ANALYZER_URL
+          value: "{{ .Values.taskAnalyzer.url }}"
+        - name: PORT
+          value: "{{ .Values.backend.port }}"
+        resources:
+          requests:
+            memory: "{{ .Values.resources.requests.memory }}"
+            cpu: "{{ .Values.resources.requests.cpu }}"
+          limits:
+            memory: "{{ .Values.resources.limits.memory }}"
+            cpu: "{{ .Values.resources.limits.cpu }}"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.backend.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
