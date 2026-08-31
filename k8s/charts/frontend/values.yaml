@@ -1,0 +1,37 @@
+# Default values for frontend Helm chart
+
+namespace: task-manager
+imagePullPolicy: Always
+replicaCount: 1
+
+image:
+  repository: "registry/frontend-static"
+  tag: "latest"
+
+frontend:
+  port: 80
+
+ingress:
+  enabled: true
+  className: traefik
+  host: "example.com"
+  tls:
+    enabled: true
+    secretName: task-manager-tls
+  backendServiceName: backend
+  backendPort: 3333
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "250m"
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5

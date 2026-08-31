@@ -1,0 +1,42 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: task-manager-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    traefik.ingress.kubernetes.io/redirect-scheme: https
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - "{{ .Values.ingress.host }}"
+    secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+  - host: ""
+    http:
+      paths:
+      - path: /auth
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.ingress.backendServiceName }}
+            port:
+              number: {{ .Values.ingress.backendPort }}
+      - path: /tasks
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.ingress.backendServiceName }}
+            port:
+              number: {{ .Values.ingress.backendPort }}
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-static
+            port:
+              number: {{ .Values.frontend.port }}
+{{- end }}
